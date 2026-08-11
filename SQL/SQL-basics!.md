@@ -956,6 +956,32 @@ CROSS JOIN
 
 ---
 
+## GROUP Function / AGGREGATE Function
+
+SUM, MIN, MAX, AVG, and COUNT are called aggregate functions because they take multiple rows and produce a single result.
+
+### why 
+aggregate functions are used when you want to get a summary from multiple rows.
+
+| Function  | What it does         |
+| --------- | -------------------- |
+| `SUM()`   | Adds values          |
+| `MIN()`   | Finds smallest value |
+| `MAX()`   | Finds largest value  |
+| `AVG()`   | Calculates average   |
+| `COUNT()` | Counts rows/values   |
+
+
+COUNT(*) → counts all rows, including rows where columns contain NULL.
+COUNT(column_name) → counts non-NULL values in that column.
+COUNT(1) → counts all rows, just like COUNT(*).
+
+### why
+COUNT(*)       → Count ALL rows
+COUNT(column)  → Count NON-NULL values
+COUNT(1)       → Count ALL rows
+
+
 ##  Mental Model
 
 ```
