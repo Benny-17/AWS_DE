@@ -459,6 +459,7 @@
 
 
 # -------------------
+# numpy / py lib / mostly numberical relataded thing and performs fast calcualtion especially in array and matrix
 # indexing in numpy 
 # import numpy as np
 # x = np.array([1, 2, 3, 4])
@@ -497,3 +498,57 @@
 # x = np.array([10, 20, 30, 40, 50])
 # np.random.randint(5 , 15, size = 5) # output is array([ 7,  8, 14,  5,  9])
 
+
+# ------------
+
+import pandas as pd
+
+# 1. Series
+s = pd.Series([1, 2, 3, 4])
+
+# 2. DataFrame
+df = pd.DataFrame({
+    "name": ["a", "b", "c"],
+    "salary": [5000, 7000, 8000]
+})
+
+# 3. Index / Columns
+df.index
+df.columns
+
+# 4. loc / iloc
+df.loc[0]              # by label
+df.iloc[0]             # by position
+df.loc[0, "salary"]    # specific value
+
+# 5. Read data
+pd.read_csv("data.csv")
+pd.read_excel("data.xlsx")
+pd.read_json("data.json")
+
+# 6. Write data
+df.to_csv("output.csv", index=False)
+df.to_excel("output.xlsx", index=False)
+df.to_json("output.json")
+
+# 7. Inspect data
+df.head()              # first rows
+df.tail()              # last rows
+df.shape               # rows, columns
+df.columns             # column names
+df.dtypes              # data types
+df.info()              # structure + nulls
+df.describe()          # statistics
+
+# 8. Select columns
+df["salary"]                    # one column
+df[["name", "salary"]]          # multiple columns / needs double [] since its list
+
+# 9. Filter rows
+df[df["salary"] > 50000]
+
+# Multiple conditions
+df[(df["salary"] > 50000) & (df["name"] == "a")]
+
+# Filter + select
+df.loc[df["salary"] > 50000, ["name", "salary"]]
