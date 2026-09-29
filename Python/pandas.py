@@ -322,3 +322,301 @@ print(df.drop_duplicates(keep="last"))
 print(df.drop_duplicates(keep=False))
 
 # -------------------
+
+# String Operations in Pandas
+# String operations are used when a column contains text and you need to clean or transform it
+
+# f["name"].str.upper()       # uppercase
+# df["name"].str.lower()       # lowercase
+# df["name"].str.strip()       # remove spaces
+# df["name"].str.contains("a") # search text
+# df["name"].str.replace("a", "x") # replace
+# df["name"].str.len()         # length
+
+import pandas as pd
+
+df = pd.DataFrame({
+    "name": [" alice ", "BOB", " Charlie "],
+    "city": ["chennai", "CHENNAI", "Bangalore"]
+})
+
+# print(df["name"].str.upper()) #Convert text to uppercase
+# print(df["name"].str.lower()) #Convert text to lowercase
+# print(df["name"].str.strip()) #Remove leading and trailing spaces
+print(df["city"].str.contains("CHENNAI"))
+print(df["city"].str.replace("CHENNAI", "Chennai"))
+print(df["city"].str.len())
+
+# --------------
+
+# Date/Time operations
+
+# # Convert
+# pd.to_datetime(df["date"])
+
+# # Extract
+# df["date"].dt.year
+# df["date"].dt.month
+# df["date"].dt.day
+# df["date"].dt.day_name()
+# df["date"].dt.month_name()
+
+# # Filter
+# df[df["date"] > "2024-01-01"]
+
+# # Date difference
+# df["date2"] - df["date1"]
+
+# # Number of days
+# (df["date2"] - df["date1"]).dt.days
+
+# # Add/subtract
+# df["date"] + pd.Timedelta(days=30)
+
+# # Format
+# df["date"].dt.strftime("%d-%m-%Y")
+# Convert a date column into Pandas datetime → then extract or manipulate parts of the date
+
+import pandas as pd
+
+df = pd.DataFrame({
+    "name": ["A", "B", "C"],
+    "joining_date": ["2024-01-15", "2023-06-20", "2025-03-10"]
+})
+
+print(df)
+print(df.dtypes) # this will show the dtype as object 
+
+# Convert to datetime - df[] = pd.to_datetime()
+df["joining_date"] = pd.to_datetime(df["joining_date"])  # convberting the dtype to datetime
+print(df)
+print(df.dtypes)
+
+# Extract year, month, day
+
+df["year"] = df["joining_date"].dt.year
+df["month"] = df["joining_date"].dt.month
+df["day"] = df["joining_date"].dt.day
+print(df)
+
+# Other useful date parts
+df["day_name"] = df["joining_date"].dt.day_name()
+df["month_name"] = df["joining_date"].dt.month_name()
+df["day_of_week"] = df["joining_date"].dt.dayofweek
+df["day_of_year"] = df["joining_date"].dt.dayofyear
+print(df)
+
+# Add/subtract dates
+
+df["after_30_days"] = df["joining_date"] + pd.Timedelta(days=30)
+df["before_7_days"] = df["joining_date"] - pd.Timedelta(days=7)
+print(df)
+
+df["after_4_months"] = df["joining_date"] + pd.DateOffset(months=4)
+df["before_2_years"] = df["joining_date"] - pd.DateOffset(years=2)
+print(df)
+
+# Filter using dates
+df[df["joining_date"] > "2024-01-01"]
+df[df["joining_date"].dt.year == 2024]
+df[
+    (df["joining_date"] >= "2024-01-01") &
+    (df["joining_date"] <= "2024-12-31")
+]
+
+# Format dates as strings - .dt.strftime()
+# %Y → 2024
+# %m → 01
+# %d → 15
+df["formatted_date"] = df["joining_date"].dt.strftime("%m-%d-%Y")
+print(df)
+
+# -----------------
+
+# Combining DataFrames: merge() and concat()
+
+# merge() → similar to SQL JOIN / wokr like same like matching column name
+# concat() → similar to stacking rows / UNION-like operation
+
+# merge() -> join two dataframes suppose if we have
+
+import pandas as pd
+# two dataferames!
+employees = pd.DataFrame({
+    "emp_id": [1, 2, 3],
+    "name": ["A", "B", "C"]
+})
+
+salary = pd.DataFrame({
+    "emp_id": [1, 2, 3],
+    "salary": [50000, 60000, 70000]
+})
+# merging them
+df = pd.merge(employees, salary, on="emp_id")
+print(df)
+
+# suppsoe if we have no matching column or diff name then
+
+employees = pd.DataFrame({
+    "emp_id": [1, 2, 3],
+    "name": ["A", "B", "C"]
+})
+
+salary = pd.DataFrame({
+    "employee_id": [1, 2, 3],
+    "salary": [50000, 60000, 70000]
+})
+
+# we use like this
+df = pd.merge(
+    employees,
+    salary,
+    left_on="emp_id",
+    right_on="employee_id"
+)
+print(df)
+
+
+# differnt type of merge() -> similar to joins 
+# merge()
+# │
+# ├── inner → INNER JOIN
+# ├── left  → LEFT JOIN
+# ├── right → RIGHT JOIN
+# └── outer → FULL OUTER JOIN
+
+import pandas as pd
+
+employees = pd.DataFrame({
+    "emp_id": [1, 2, 3, 4, 5, 6],
+    # "name": ["A", "B", "C"]
+})
+
+salary = pd.DataFrame({
+    "emp_id": [1, 2, 3, 3, 4, 6],
+    # "salary": [50000, 60000, 70000]
+})
+
+# inner -> Only matching records
+pd.merge(
+    employees,
+    salary,
+    on="emp_id",
+    how="inner"
+)
+
+
+# left join
+pd.merge(
+    employees,
+    salary,
+    on="emp_id",
+    how="left"
+)
+
+# right join
+pd.merge(
+    employees,
+    salary,
+    on="emp_id",
+    how="right"
+)
+
+# outer join
+pd.merge(
+    employees,
+    salary,
+    on="emp_id",
+    how="outer"
+)
+
+# concat() — Combine DataFrames
+# imagine we have employees from two different sources
+
+import pandas as pd
+df1 = pd.DataFrame({
+    "name": ["A", "B"],
+    "salary": [50000, 60000]
+})
+
+df2 = pd.DataFrame({
+    "name": ["C", "D"],
+    "salary": [70000, 80000]
+})
+
+# We want:
+# A
+# B
+# C
+# D
+
+# so we use 
+df = pd.concat([df1, df2])
+print(df)
+
+# If you want a fresh index not like 0 1 0 1 since its from two df know! to avoid that we use
+df = pd.concat([df1, df2], ignore_index=True)
+print(df)
+
+# concat can also combine columns
+df1 = pd.DataFrame({
+    "name": ["A", "B", "C"]
+})
+
+df2 = pd.DataFrame({
+    "salary": [50000, 60000, 70000]
+})
+
+# axis tells Pandas which direction to combine.
+# axis=0 → along rows / column-wise
+# axis=1 → along columns / row-wise
+df = pd.concat([df1, df2], axis=1)
+print(df)
+
+# -----------------------------
+
+# apply() + lambda
+
+# apply() = run a function on every value/row/column
+# lambda = write a small function in one line
+
+# apply() - with normal function
+import pandas as pd
+
+df = pd.DataFrame({
+    "name": ["A", "B", "C"],
+    "salary": [50000, 60000, 70000]
+})
+
+# i have a df 
+# then i would create a normal function
+def add_bonus(salary):
+    return salary + 5000 # 
+
+# then am applying it
+df["new_salary"] = df["salary"].apply(add_bonus) #Take every value in salary and pass it to add_bonus()
+print(df)
+
+# lambda - small function
+df["new_salary"] = df["salary"].apply(lambda x: x + 2000)
+print(df)
+# multiply
+df["new_salary"] = df["salary"].apply(lambda x: x * 2)
+print(df)
+# add 10%
+df["new_salary"] = df["salary"].apply(lambda x: x * 1.10)
+print(df)
+# convet into lowercase
+df["name"] = df["name"].apply(lambda x: x.lower())
+print(df)
+
+
+# apply() - with conditons
+df["level"] = df["salary"].apply(lambda x: "high" if x > 60000 else "low")
+print(df)
+# apply() - apply on a dataframe
+def employee_info(row):
+    return row["name"] + "-" + str(row["salary"])
+
+df["info"] = df.apply(employee_info, axis=1)
+print(df)
